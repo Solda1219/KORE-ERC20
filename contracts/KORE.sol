@@ -16,7 +16,6 @@ contract KORE is ERC20, Auth {
     uint256 public price = 0.01 ether; // 1 token price: 10**18 tokens with decimal
 
     constructor() ERC20(_name, _symbol) Auth(_msgSender()) {
-        owner = payable(_msgSender());
     }
 
     function decimals() public pure override returns (uint8) {

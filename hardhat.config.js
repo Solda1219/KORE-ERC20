@@ -7,7 +7,7 @@ module.exports = {
     moonbase: {
       url: 'https://rpc.api.moonbase.moonbeam.network', // Insert your RPC URL here
       chainId: 1287, // (hex: 0x507),
-      accounts: ['c2f7c0ce784c919549d450a05d38b58b3a48bccfc22e8b8d58fda8aa31532581'],
+      accounts: ['f925f6975c5100f91b1bada3c9b3aecc6604753fd7d7c620ea3a43dff9611358'],
     },
   },
 };
