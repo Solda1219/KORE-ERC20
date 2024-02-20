@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "./lib/Auth.sol";
 
-contract KORE is ERC20 {
-    address payable public owner;
+contract KORE is ERC20, Auth {
     string private _name = "KU ORE";
     string private _symbol = "KORE";
     uint256 private maxSupply = 1000 * 10 ** 6 * 10 ** 18;
@@ -15,8 +15,8 @@ contract KORE is ERC20 {
     uint256 public rewardSupply = 0;
     uint256 public price = 0.01 ether; // 1 token price: 10**18 tokens with decimal
 
-    constructor() ERC20(_name, _symbol) {
-        owner = payable(msg.sender);
+    constructor() ERC20(_name, _symbol) Auth(_msgSender()) {
+        owner = payable(_msgSender());
     }
 
     function decimals() public pure override returns (uint8) {
@@ -29,36 +29,28 @@ contract KORE is ERC20 {
         (bool os, ) = payable(owner).call{value: msg.value}("");
         require(os);
         saleSupply = saleSupply + _amount;
-        _mint(msg.sender, _amount);
+        _mint(_msgSender(), _amount);
     }
 
-    function airdropHatch(address _to) public onlyOwner {
+    function airdropHatch(address _to) public authorized {
         require(airdropSupply < _reserveHatchAirdrop, "Airdrop has ended");
         airdropSupply += _reserveHatchAirdrop / 500;
         _mint(_to, _reserveHatchAirdrop/ 500);
     }
-    function multiAirdropHatch(address[] memory addrs) public onlyOwner {
+    function multiAirdropHatch(address[] memory addrs) public authorized {
         for (uint i = 0; i < addrs.length; i++){
             require(airdropSupply < _reserveHatchAirdrop, "Airdrop has ended");
             airdropSupply += _reserveHatchAirdrop / 500;
             _mint(addrs[i], _reserveHatchAirdrop / 500);
         }
     }
-    function burn(uint256 _amount) public onlyOwner { // _amount should be the value of real_amount*10**18
-        _burn(msg.sender, _amount);
+    function burn(uint256 _amount) public authorized { // _amount should be the value of real_amount*10**18
+        _burn(_msgSender(), _amount);
     }
 
 
-    function setPrice(uint256 _price) external onlyOwner {
+    function setPrice(uint256 _price) external authorized {
         price = _price;
     }
-    function transferOwnership(address payable to) external onlyOwner {
-        owner = payable(to);
-    }
 
-    //reusable modifier
-    modifier onlyOwner() {
-        require(msg.sender == owner, "Only the owner can call this function");
-        _;
-    }
 }
